@@ -68,8 +68,8 @@ const getPageResources = async($,fieldNames) => {
             $('a').map( (index,item) => {
                 if(typeof item.attribs.href !== 'undefined'){ 
                     var row = {};
-                    row.anchor = item.attribs.href;
-                    row.anchorText = typeof item.text !== 'undefined'?item.text.trim():'';
+                    row.href = item.attribs.href;
+                    row.text = typeof item.text !== 'undefined'?item.text.trim():'';
                     resources['anchors'].push(row);
                 }
             });
@@ -81,7 +81,7 @@ const getPageResources = async($,fieldNames) => {
                 if(typeof item.attribs.src !== 'undefined'){
                     var row = {};
                     row.src = item.attribs.src;
-                    row.altText = typeof item.attribs.alt !== 'undefined'?item.attribs.alt.trim():'';
+                    row.alt = typeof item.attribs.alt !== 'undefined'?item.attribs.alt.trim():'';
                     resources['images'].push(row);
                 }
             });
