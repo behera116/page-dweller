@@ -227,6 +227,8 @@ const getTopics = async(plainText) => {
         dataJson.forEach( (item) => {
             sents.push(item.text);
         });
+        var uniqueTopics = new Set(sents);
+        sents = [...uniqueTopics];
         return sents;
     }catch(err){
         console.log('Error while parsing topic. Details - '+err);
@@ -292,6 +294,15 @@ const getPageDetails = async(url) => {
         return;
     }
 };
+
+( async() => {
+    var url = "https://www.thehindu.com/news/national/opposition-protest-against-ib-ministry-advisory-in-the-backdrop-of-assam-violence/article30283682.ece?homepage=true";
+    var pagetdata = await getPageDetails(url);
+
+    console.log(JSON.stringify(pagetdata.nlpData.topics));
+
+})()
+
 
 module.exports = {
     'getPageDetails': getPageDetails,
