@@ -295,14 +295,6 @@ const getPageDetails = async(url) => {
     }
 };
 
-( async() => {
-    var url = "https://www.thehindu.com/news/national/opposition-protest-against-ib-ministry-advisory-in-the-backdrop-of-assam-violence/article30283682.ece?homepage=true";
-    var pagetdata = await getPageDetails(url);
-
-    console.log(JSON.stringify(pagetdata.nlpData.topics));
-
-})()
-
 
 module.exports = {
     'getPageDetails': getPageDetails,
