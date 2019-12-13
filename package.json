@@ -1,20 +1,31 @@
 {
   "name": "page-dweller",
   "version": "1.0.3",
-  "description": "Getting metadata, script src, stylesheet links, anchors, images, topics and term frequencies of a webpage",
+  "description": "Getting metadata,schema/structured data, opengraph data, script src, stylesheet links, anchors, images, topics and term frequencies of a webpage",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "metadata",
+    "opengraph data",
     "schema data",
     "script links",
+    "ld+json data",
+    "structured data",
+    "images with alt text",
+    "anchors with anchor text",
     "anchors",
     "topics",
-    "word frequncies"
+    "people, organisations",
+    "term frequncies"
   ],
   "author": "Ananda Behera",
+  "homepage": "https://github.com/behera116/page-dweller/blob/master/README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/behera116/page-dweller.git"
+  },
   "license": "ISC",
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
