@@ -1,6 +1,6 @@
 {
   "name": "page-dweller",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Getting metadata, script src, stylesheet links, anchors, images, topics and term frequencies of a webpage",
   "main": "index.js",
   "scripts": {
