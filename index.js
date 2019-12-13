@@ -69,7 +69,8 @@ const getPageResources = async($,fieldNames) => {
                 if(typeof item.attribs.href !== 'undefined'){ 
                     var row = {};
                     row.href = item.attribs.href;
-                    row.text = typeof item.text !== 'undefined'?item.text.trim():'';
+                    var atext = $(item).text();
+                    row.text = typeof atext !== 'undefined'? atext.trim():'';
                     resources['anchors'].push(row);
                 }
             });
@@ -273,8 +274,16 @@ const getPageDetails = async(url) => {
         console.log("finale URL: "+finalUrl);
         console.log("status code: "+statusCode);
 
+        
+        var headerInfo = {
+            finalUrl: finalUrl,
+            statusCode: statusCode
+        }
 
-        let pagedata = {};
+        let pagedata = {
+            headerInfo: headerInfo
+        };
+
         if(typeof response.body !== 'undefined'){
             var $ = await loadElement(response.body);
             pagedata.metadata = await getMetadata($);
@@ -294,6 +303,13 @@ const getPageDetails = async(url) => {
         return;
     }
 };
+
+/*( async() => {
+    var url = "https://www.mysmartprice.com/";
+    var pagetdata = await getPageDetails(url);
+    console.log(JSON.stringify(pagetdata.resources.anchors));
+
+})();*/
 
 
 module.exports = {
