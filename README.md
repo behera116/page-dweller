@@ -53,29 +53,43 @@ var $ = await dweller.loadElement(html);
 var resources = await dweller.getPageResources($,['scripts','links','images','anchros']);
 ```
 
-Output:
-```
+Expected Output format:
+
+```javascript
+
 {
-    scripts:["link1.js","link2.js",...],
-    links:{ . 
-        canonical:["c-link1", "c-link2"...], 
-        stylesheet: ["ss-link1.css","ss-link2.css"...]
-        ...
-    },  
-    anchors:[
-     {
-        href: "a-link1",
-        text: "link1"
-     }
-     ...
+  "links": {
+    "canonical": [
+      "http://www.rannutsav.com"
     ],
-    images: [
-        {
-            src: "img-link",
-            alt: "image-alt-text"
-        },
-        ...
+    "stylesheet": [
+      "https://www.rannutsav.com/assets/front/css/creative.min.css"
     ]
+  },
+  "scripts": [
+    "https://www.rannutsav.com/assets/front/vendor/jquery/jquery.min.js",
+    "https://www.google.com/recaptcha/api.js"
+  ],
+  "anchors": [
+    {
+      "href": "http://www.akshartours.com/akshar-tour-categories/international-tours/1",
+      "text": "International Tour Package"
+    },
+    {
+      "href": "tel:18002339008",
+      "text": ""
+    }
+  ],
+  "images": [
+    {
+      "src": "https://www.rannutsav.com/assets/front/images/WILDLIFE.jpg",
+      "alt": "special offer"
+    },
+    {
+      "src": "https://www.rannutsav.com/assets/front/images/DESERT AND BEACH .jpg",
+      "alt": "special offer"
+    }
+  ]
 }
 ```
 
@@ -91,20 +105,24 @@ var metadata = await dweller.getMetadata($);
 ```
 
 Expected Output:
-```
+```javascript
+
 {
-    http-equiv: {
-        Content-type: "text/html; charset=utf-8",
-        X-UA-Compatible: "IE=Edge"
-    },
-    robots: noodp,
-    opengraph: {
-        site_name: "xyz",
-        title: "webpage title",
-        description: "...",
-        url: "url.com",
-        ...
-    }
+  "charset": "utf-8",
+  "viewport": "width=device-width, initial-scale=1, shrink-to-fit=no",
+  "description": "Its time to celebrate most awaiting colourful event of Kutch Rann Utsav at 2019, 2020. Specially designed honeymoon tent for Couple at Rann utsav, Kutch, Gujart, India. Call at +91 - 79 2644 0626, + 91 - 79 - 2646 2166 or email us at akshartours@ymail.com",
+  "keywords": "Rann Utsav Tour, Package, Tent Booking 2019-20",
+  "revisit-after": "1 days",
+  "author": "Rann Utsav",
+  "Robots": "all",
+  "googlebot": "index, follow",
+  "MSNbot": "index, follow",
+  "rating": "General",
+  "distribution": "global",
+  "opengraph": {
+    "site_name": "Rann Utsav",
+    "url": "https://www.rannutsav.com/"
+  }
 }
 
 ```
