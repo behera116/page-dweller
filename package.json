@@ -1,6 +1,6 @@
 {
   "name": "page-dweller",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Getting metadata,schema/structured data, opengraph data, script src, stylesheet links, anchors, images, topics and term frequencies of a webpage",
   "main": "index.js",
   "scripts": {
