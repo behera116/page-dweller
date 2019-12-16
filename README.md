@@ -196,7 +196,7 @@ function: `innerText(jQueryElement)` .
 `innerText` function extracts the text content from body tag after removing `<script>` and `<style>` tags from it. It appends a new line character at the end of text content of each element.
 This is an similar to [innertext](https://www.npmjs.com/package/innertext) where it contains spaces rather than new lines after each html element.
 
-```
+```js
 var $ = await dweller.loadElement(html);
 var plainText = await dweller.innerText($);
 ```
@@ -259,7 +259,7 @@ options:
     - max (max size of datagram)
 
 implementation:
-```
+```js
 var dataGrams = await getDataGrams(plainText,{size:1});//for one word terms
 
 ```

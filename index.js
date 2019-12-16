@@ -21,10 +21,12 @@ const fetchUrlAsync = async(url) => {
             if(err){
                 reject({
                     error: err, 
-                    header:header
+                    header:meta,
+                    body:""
                 });
             }else{
                 resolve({
+                    error: "",
                     header: meta, 
                     body: body.toString() 
                 });
@@ -270,7 +272,7 @@ const getPageDetails = async(url) => {
     try{ 
         var response = await fetchUrlAsync(url);
         var finalUrl = response.header.finalUrl;
-        var statusCode = response.status;
+        var statusCode = response.header.status;
         console.log("finale URL: "+finalUrl);
         console.log("status code: "+statusCode);
 
@@ -288,7 +290,7 @@ const getPageDetails = async(url) => {
             var $ = await loadElement(response.body);
             pagedata.metadata = await getMetadata($);
             pagedata.schema = await getLdJson($);
-            pagedata.resources = await getPageResources($,['anchors','scripts','links']);
+            pagedata.resources = await getPageResources($,['anchors','scripts','links','images']);
             
             pagedata.plainText = await innerText($);
             pagedata.nlpData = await getNlpData(pagedata.plainText,['topics','datagrams']);        
