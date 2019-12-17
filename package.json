@@ -28,6 +28,7 @@
   },
   "license": "ISC",
   "dependencies": {
+    "apify": "^0.17.0",
     "cheerio": "^1.0.0-rc.3",
     "compromise": "^12.2.1",
     "compromise-ngrams": "0.0.3",

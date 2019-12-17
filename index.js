@@ -1,9 +1,9 @@
 const fetchUrl = require('fetch').fetchUrl;
 const cheerio = require('cheerio');
 const parseUrl = require('url-parse');
+const Apify = require('apify');
 
 const Entities = require('html-entities').AllHtmlEntities;
-
 
 const stopword = require('stopword');
 const nlp = require('compromise');
@@ -267,34 +267,83 @@ module.exports = {
 }
 
 
-const getPageDetails = async(url) => {
+const getSocialData = async(html) => {
+    try{
+        var media = Apify.utils.social.parseHandlesFromHtml(html);
+        media.phonesUncertain = (typeof media.phonesUncertain !== 'undefined' && media.phonesUncertain.length>0)? (media.phonesUncertain.filter( (row,idx) => idx<5)): [];
+        return media;
+    }catch(err){
+        console.log('Unable to extract social data. Details - '+err);
+        return;
+    }
 
-    try{ 
+}
+
+
+const getSpecificPageData = async(url,requiredFields) => {
+    
+    try{
         var response = await fetchUrlAsync(url);
         var finalUrl = response.header.finalUrl;
         var statusCode = response.header.status;
         console.log("finale URL: "+finalUrl);
         console.log("status code: "+statusCode);
 
-        
-        var headerInfo = {
-            finalUrl: finalUrl,
-            statusCode: statusCode
-        }
 
-        let pagedata = {
-            headerInfo: headerInfo
-        };
+        let pagedata = {};
+
+        if(requiredFields.hasOwnProperty('header')){
+            pagedata.header = response.header; 
+        }
+        
 
         if(typeof response.body !== 'undefined'){
-            var $ = await loadElement(response.body);
-            pagedata.metadata = await getMetadata($);
-            pagedata.schema = await getLdJson($);
-            pagedata.resources = await getPageResources($,['anchors','scripts','links','images']);
             
-            pagedata.plainText = await innerText($);
-            pagedata.nlpData = await getNlpData(pagedata.plainText,['topics','datagrams']);        
-            return pagedata;    
+            var $ = await loadElement(response.body);
+            
+            if(requiredFields.hasOwnProperty('metadata')){
+                pagedata.metadata = await getMetadata($);
+            }
+            
+            if(requiredFields.hasOwnProperty('schema'))
+                pagedata.schema = await getLdJson($);
+            
+            if(requiredFields.hasOwnProperty('resources')){
+                var rFields = requiredFields.resources;
+                if(!Array.isArray(rFields) || rFields.length === 0){
+                    rFields = ['scripts','links','anchors','images'];
+                }
+                pagedata.resources = await getPageResources($,rFields);
+            }
+
+            if(requiredFields.hasOwnProperty('social')){
+                var socialData = await getSocialData(response.body);
+                
+                var sFields = requiredFields.social;
+                if(Array.isArray(sFields) && sFields.length>0){
+                    for(var skey in socialData){
+                        if(!sFields.includes(skey)){
+                            delete socialData[skey];//remove all data points not required for social profile
+                        }
+                    }
+                }
+                pagedata.socialData = socialData;
+            }
+
+            var plainText = await innerText($);
+            if(requiredFields.hasOwnProperty('plainText'))
+                pagedata.plainText = plainText;
+            
+            if(requiredFields.hasOwnProperty('nlpData')){
+                var nfields = requiredFields.nlpData;
+                if(!Array.isArray(nfields) || nfields.length === 0){
+                    nfields = ['topics','datagrams'];
+                }
+                pagedata.nlpData = await getNlpData(plainText,nfields);
+            }
+ 
+            return pagedata;
+
         }else{
             console.log(JSON.stringify(response.error));
             return;
@@ -304,12 +353,46 @@ const getPageDetails = async(url) => {
         console.log("error while processing webpage. Details: "+err);
         return;
     }
+
+}
+
+const getPageDetails = async(url) => {
+
+    try{
+        var fields = {
+            header:true,
+            metdata: true,
+            schema: true,
+            plainText:true,
+            social:[],
+            nlpData:[],
+            resources:[]
+        };
+        var pagedata = await getSpecificPageData(url,fields);
+        return pagedata;
+    }catch(err){
+        console.log("error while processing webpage. Details: "+err);
+        return;
+    }
 };
+
+
 
 /*( async() => {
     var url = "https://www.mysmartprice.com/";
+    
+    var requiredFields = { 
+        //metadata:true,
+        //social: ['twitters','facebooks','youtubes'],
+        //schema:true,
+        //resources:['scripts','images']
+        //nlpData:["topics"],
+        //plainText:true,
+        //header:true 
+    }
+
     var pagetdata = await getPageDetails(url);
-    console.log(JSON.stringify(pagetdata.resources.anchors));
+    console.log(JSON.stringify(pagetdata));
 
 })();*/
 
@@ -325,7 +408,9 @@ module.exports = {
     'innerText': innerText,
     'getNlpData': getNlpData,
     'getDataGrams': getDataGrams,
-    'getTopics': getTopics
+    'getTopics': getTopics,
+    'getSocialData': getSocialData,
+    'getSpecificPageData':getSpecificPageData
 }
 
 
