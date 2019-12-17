@@ -267,10 +267,17 @@ module.exports = {
 }
 
 
-const getSocialData = async(html) => {
+const getSocialData = async(html,fields) => {
     try{
         var media = Apify.utils.social.parseHandlesFromHtml(html);
         media.phonesUncertain = (typeof media.phonesUncertain !== 'undefined' && media.phonesUncertain.length>0)? (media.phonesUncertain.filter( (row,idx) => idx<5)): [];
+        if(Array.isArray(fields) && fields.length>0){
+            for(var skey in media){
+                if(!fields.includes(skey)){
+                    delete media[skey];//remove all data points not required for social profile
+                }
+            }
+        } 
         return media;
     }catch(err){
         console.log('Unable to extract social data. Details - '+err);
@@ -317,17 +324,7 @@ const getSpecificPageData = async(url,requiredFields) => {
             }
 
             if(requiredFields.hasOwnProperty('social')){
-                var socialData = await getSocialData(response.body);
-                
-                var sFields = requiredFields.social;
-                if(Array.isArray(sFields) && sFields.length>0){
-                    for(var skey in socialData){
-                        if(!sFields.includes(skey)){
-                            delete socialData[skey];//remove all data points not required for social profile
-                        }
-                    }
-                }
-                pagedata.socialData = socialData;
+                pagedata.socialData = await getSocialData(response.body,requiredFields.social);
             }
 
             var plainText = await innerText($);
@@ -361,7 +358,7 @@ const getPageDetails = async(url) => {
     try{
         var fields = {
             header:true,
-            metdata: true,
+            metadata: true,
             schema: true,
             plainText:true,
             social:[],
@@ -382,8 +379,8 @@ const getPageDetails = async(url) => {
     var url = "https://www.mysmartprice.com/";
     
     var requiredFields = { 
-        //metadata:true,
-        //social: ['twitters','facebooks','youtubes'],
+        metadata:true,
+        social: ['twitters','facebooks','youtubes'],
         //schema:true,
         //resources:['scripts','images']
         //nlpData:["topics"],
