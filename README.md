@@ -1,6 +1,6 @@
 # page-dweller
-page-dweller tries to extracting all possible webpage information at one place by implementing diffrent npm packages.
-Scraping webpage for metadata, schema information, resource links such as anchor, script src, images, plain text, topics discussed in the page and term frequencies
+page-dweller tries to extract all possible data points available in a webpage by implementing diffrent npm packages.
+Scraping webpage for metadata, schema information, resource links such as anchor, script src, images,social profile links,emails, phone number, plain text, topics discussed in the page and term frequencies.
 
 ## Install
 
@@ -22,19 +22,80 @@ const dweller = require('page-dweller');
 })();
 ```
 
+Output format:
+
+```javascript
+{
+    header:{
+        status:200,
+        finalUrl:"https://example.com/",
+        responseHeaders:{}
+    },
+    socialData:{
+        twitters:String[],
+        facebooks:String[],
+        youtubes:String[],
+        emails:String[],
+        phones:String[],
+        phonesUncertain:String[],
+        linkedIns:String[],
+        instagrams:String[]
+    },
+    schema: Object[],//all the ld json objects
+    resources:{
+        links:{
+            canonical: String[],
+            stylesheet: String[]
+        }
+        scripts:String[],//src attribute of all script element
+        anchors: Object[],//{href:"a URL", text: "text content of <a> tag "}
+        images: Object[]//{src:"image URL","alt":"alt text of the image"}
+    },
+    plainText: String,// text present inside body tag excluding script and stylesheet text
+    nlpData:{
+        dataGrams: Object[],//{size:1,count:43,normal:"hello"}
+        topics: String[]
+    }
+}
+
+```
+
+For specific data point extraction from a webpage use [getSpecificPageData method](#getSpecificPageData).
 
 ---
 
 ## Table of Contents  
 
+- [Getting specific data points from a webpage](#getSpecificPageData)
 - [async fetch URL response](#async-fetch)
 - [Loading HTML](#load-element)
 - [Getting script,stylesheet, anchors, images details](#PageResources)
 - [Getting Metadata](#metadata)
+- [Getting Social data](#social-data)
 - [Getting Structured data(schema.org) from ld+json](#structured-data)
 - [Getting plain text from html](#plaintext)
 - [Getting Nlp data such as data and term frequencies from plaintext](#nlpdata)
 - [Getting datagrams from plain text](#get-datagrams)
+
+---
+<a name="getSpecificPageData"></a>
+## Getting specific data points from a webpage
+
+To extract any specific data points from a given webpage the properties must be present in `fields` varaible which is passed as argument to `getSpecificPageData` function. An empty array value against a key will return full data for that property.
+i.e: `nlpData:[]` will return both datagrams,topics in nlpData result.
+
+```js
+var fields = {
+    header:true, 
+    metdata: true,
+    schema: true,
+    plainText:true,
+    social:[],//possible array values for social['twitters','facebooks','youtubes','instagrams','emails','phones','phonesUncertain','linkedIns']
+    nlpData:[],//possible array values['datagrams','topics']
+    resources:[]//possible array values['links','anchors','scripts','images']
+};
+var pagedata = await getSpecificPageData(url,fields);
+```
 ---
 <a name="async-fetch"></a>
 ## async Fetch function
@@ -148,7 +209,38 @@ Expected Output:
 }
 
 ```
+---
+<a name="social-data"></a>
 
+## Getting Social data(email,phones, twitter,facebook, instagram URLs)
+[Apify social Utils's](https://sdk.apify.com/docs/api/social) `parseHandlesFromHtml` is used for the extraction of various social information. `phonesUncertain`(low chances of being a phone number) is limited to max 5 to avoid large size of data.
+
+Function: `getSocialData(html,fields)`
+
+```js
+var fields = {
+    social:['twitters','facebooks',emails,'phones']
+}
+var socialData = await getSocialData(html,fields);
+```
+Output format:
+```javascript
+{
+    socialData:{
+        twitters:String[],
+        facebooks:String[],
+        youtubes:String[],
+        emails:String[],
+        phones:String[],
+        phonesUncertain:String[],
+        linkedIns:String[],
+        instagrams:String[]
+    }
+}
+```
+
+
+---
 <a name="structured-data"></a>
 ## Getting Structured data(schema.org) from ld+json
 function: `getLdJson(jQueryElement)`
