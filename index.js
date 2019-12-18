@@ -97,6 +97,17 @@ const getPageResources = async($,fieldNames) => {
     return resources;
 }
 
+const getPageTitle = async($) => {
+    var title = "";
+    try{
+        $('title').map( (index,item) => {
+            title = $(item).text().trim();
+        });
+    }catch(error){
+        console.log("unable to extract title. Details - ",title);
+    }
+    return title;
+}
 
 const getMetadata = async($) => {
     try{
@@ -302,12 +313,15 @@ const getSpecificPageData = async(url,requiredFields) => {
         if(requiredFields.hasOwnProperty('header')){
             pagedata.header = response.header; 
         }
-        
-
+       
         if(typeof response.body !== 'undefined'){
             
             var $ = await loadElement(response.body);
             
+            if(requiredFields.hasOwnProperty('pageTitle')){
+                pagedata.pageTitle = await getPageTitle($);
+            }
+
             if(requiredFields.hasOwnProperty('metadata')){
                 pagedata.metadata = await getMetadata($);
             }
@@ -358,6 +372,7 @@ const getPageDetails = async(url) => {
     try{
         var fields = {
             header:true,
+            pageTitle: true,
             metadata: true,
             schema: true,
             plainText:true,
@@ -381,6 +396,7 @@ const getPageDetails = async(url) => {
     var requiredFields = { 
         metadata:true,
         social: ['twitters','facebooks','youtubes'],
+        pageTitle: true,
         //schema:true,
         //resources:['scripts','images']
         //nlpData:["topics"],
@@ -388,7 +404,7 @@ const getPageDetails = async(url) => {
         //header:true 
     }
 
-    var pagetdata = await getPageDetails(url);
+    var pagetdata = await getSpecificPageData(url,requiredFields);
     console.log(JSON.stringify(pagetdata));
 
 })();*/
@@ -407,7 +423,8 @@ module.exports = {
     'getDataGrams': getDataGrams,
     'getTopics': getTopics,
     'getSocialData': getSocialData,
-    'getSpecificPageData':getSpecificPageData
+    'getSpecificPageData':getSpecificPageData,
+    'getPageTitle': getPageTitle
 }
 
 
